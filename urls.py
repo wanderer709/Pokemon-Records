@@ -1,38 +1,34 @@
-from django.urls import path
-from .views import (
-    TeamListView,
-    UserTeamListView,
-    TeamCreateView,
-    TeamDetailView,
-    TeamUpdateView,
-    TeamDeleteView,
-    PokemonListView,
-    UserPokemonListView,
-    PokemonCreateView,
-    PokemonDetailView,
-    PokemonUpdateView,
-    PokemonDeleteView,
-    TrainerView
-)
-from . import views
+"""ShowPokemon URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/4.0/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from tempfile import template
+from django.contrib import admin
+from django.contrib.auth import views as auth_views
+from django.urls import path, include
+from users import views as user_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', views.home, name='pokemon-home'),
-    path('trainers', views.trainers, name='pokemon-trainers'),
-    path('trainer/<str:username>', TrainerView.as_view(), name='pokemon-trainer'),
-    path('about', views.about, name='pokemon-about'),
-    path('roster', PokemonListView.as_view(), name='pokemon-roster'),
-    path('roster/<str:username>', UserPokemonListView.as_view(), name='user-pokemon-roster'),
-    path('pokemon/new/', PokemonCreateView.as_view(), name='pokemon-create'),
-    path('pokemon/<int:pk>/', PokemonDetailView.as_view(), name='pokemon-detail'),
-    path('pokemon/<int:pk>/update', PokemonUpdateView.as_view(), name='pokemon-update'),
-    path('pokemon/<int:pk>/delete', PokemonDeleteView.as_view(), name='pokemon-delete'),
-    path('teams', TeamListView.as_view(), name='pokemon-teams'),
-    path('teams/<str:username>', UserTeamListView.as_view(), name='user-pokemon-teams'),
-    path('team/new/', TeamCreateView.as_view(), name='team-create'),
-    path('team/<int:pk>/', TeamDetailView.as_view(), name='team-detail'),
-    path('team/<int:pk>/update', TeamUpdateView.as_view(), name='team-update'),
-    path('team/<int:pk>/delete', TeamDeleteView.as_view(), name='team-delete'),
-    # path('pokemon', views.pokemon, name='pokemon-pokemon'),
-    # path('team', views.team, name='pokemon-team'),
+    path('admin/', admin.site.urls),
+    path('register/', user_views.register, name='register'),
+    path('profile/', user_views.profile, name='profile'),
+    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
+    path('', include('pokemon.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
